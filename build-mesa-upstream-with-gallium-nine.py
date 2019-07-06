@@ -146,7 +146,7 @@ print upstream_version
 
 print "Move git mesa directory"
 os.chdir("/opt/mesa")
-new_name = "mesa-" + upstream_version + "-" + git_date + "-" + git_version + "-galliumnine"
+new_name = "mesa-" + upstream_version + "-" + git_date + "-" + git_version
 new_path = "/opt/mesa/" + new_name + "/"
 print new_path
 os.rename("/opt/mesa/mesa", new_path)
@@ -160,73 +160,73 @@ os.chdir(new_path + "debian/patches")
 os.popen("rm *").read()
 os.popen("touch series")
 
-print "Update debian/control file"
+#print "Update debian/control file"
 
-f1 = open(new_path + "debian/control",     'r')
-f2 = open(new_path + "debian/control.tmp", 'w')
+#f1 = open(new_path + "debian/control",     'r')
+#f2 = open(new_path + "debian/control.tmp", 'w')
 
-swx11_block = 0
+#swx11_block = 0
 
-for line in f1:
+#for line in f1:
 
-	if swx11_block == 0:
-		#Look for Package and swx11 in the same line
-		if "Package" in line and "swx11" in line:
-			#If inside swx11 block, do not write to new file until we see Package again
-			swx11_block = 1
+#	if swx11_block == 0:
+#		#Look for Package and swx11 in the same line
+#		if "Package" in line and "swx11" in line:
+#			#If inside swx11 block, do not write to new file until we see Package again
+#			swx11_block = 1
+#
+#		else:
+#			#Look for llvm and libclang 3.8, replace with 3.9
+#			f2.write(line.replace('llvm-3.8-dev', 'llvm-3.9-dev').replace('libclang-3.8-dev', 'libclang-3.9-dev'))
+#
+#	elif swx11_block == 1:
+#		if "Package" in line and not "swx11" in line:
+#			swx11_block = 0
+#			f2.write(line)
+#
+#f1.close()
+#f2.close()
 
-		else:
-			#Look for llvm and libclang 3.8, replace with 3.9
-			f2.write(line.replace('llvm-3.8-dev', 'llvm-3.9-dev').replace('libclang-3.8-dev', 'libclang-3.9-dev'))
+#os.remove(new_path + "debian/control")
+#os.rename(new_path + "debian/control.tmp", new_path + "debian/control")
 
-	elif swx11_block == 1:
-		if "Package" in line and not "swx11" in line:
-			swx11_block = 0
-			f2.write(line)
+#print "Update debian/rules file"
 
-f1.close()
-f2.close()
+#f1 = open(new_path + "debian/rules",     'r')
+#f2 = open(new_path + "debian/rules.tmp", 'w')
 
-os.remove(new_path + "debian/control")
-os.rename(new_path + "debian/control.tmp", new_path + "debian/control")
-
-print "Update debian/rules file"
-
-f1 = open(new_path + "debian/rules",     'r')
-f2 = open(new_path + "debian/rules.tmp", 'w')
-
-for line in f1:
+#for line in f1:
 
 	#Look for llvm and libclang 3.8, replace with 3.9
-	f2.write(line.replace('llvm-config-3.8', 'llvm-config-3.9'))
+#	f2.write(line.replace('llvm-config-3.8', 'llvm-config-3.9'))
 
-	if "enable-va" in line:
-		f2.write("	confflags_GALLIUM += --enable-nine\n")
+#	if "enable-va" in line:
+#		f2.write("	confflags_GALLIUM += --enable-nine\n")
 
-f1.close()
-f2.close()
+#f1.close()
+#f2.close()
 
-os.remove(new_path + "debian/rules")
-os.rename(new_path + "debian/rules.tmp", new_path + "debian/rules")
+#os.remove(new_path + "debian/rules")
+#os.rename(new_path + "debian/rules.tmp", new_path + "debian/rules")
 
-print "Add Gallium Nine include to mesa-common-dev"
-f1 = open(new_path + "debian/mesa-common-dev.install.in", 'a')
+#print "Add Gallium Nine include to mesa-common-dev"
+#f1 = open(new_path + "debian/mesa-common-dev.install.in", 'a')
 
-f1.write("usr/lib/${DEB_HOST_MULTIARCH}/pkgconfig/d3d.pc\n")
-f1.write("usr/include/GL/mesa_glinterop.h\n")
-f1.write("/usr/include/d3dadapter/drm.h\n")
-f1.write("usr/include/d3dadapter/d3dadapter9.h\n")
-f1.write("usr/include/d3dadapter/present.h\n")
+#f1.write("usr/lib/${DEB_HOST_MULTIARCH}/pkgconfig/d3d.pc\n")
+#f1.write("usr/include/GL/mesa_glinterop.h\n")
+#f1.write("/usr/include/d3dadapter/drm.h\n")
+#f1.write("usr/include/d3dadapter/d3dadapter9.h\n")
+#f1.write("usr/include/d3dadapter/present.h\n")
 
-f1.close()
+#f1.close()
 
-print "Add Gallium Nine shared object library files to libgl1-mesa-glx"
-f1 = open(new_path + "debian/libgl1-mesa-glx.install.in", 'a')
+#print "Add Gallium Nine shared object library files to libgl1-mesa-glx"
+#f1 = open(new_path + "debian/libgl1-mesa-glx.install.in", 'a')
 
-f1.write("usr/lib/${DEB_HOST_MULTIARCH}/d3d/d3dadapter9.so\n")
-f1.write("usr/lib/${DEB_HOST_MULTIARCH}/d3d/d3dadapter9.so.*\n")
+#f1.write("usr/lib/${DEB_HOST_MULTIARCH}/d3d/d3dadapter9.so\n")
+#f1.write("usr/lib/${DEB_HOST_MULTIARCH}/d3d/d3dadapter9.so.*\n")
 
-f1.close()
+#f1.close()
 
 print "Update changelog"
 os.chdir(new_path)
@@ -236,10 +236,10 @@ print "Install build dependencies"
 os.system("mk-build-deps --tool \"apt-get --no-install-recommends -y\" --install " + new_path + "debian/control")
 
 print "Begin building"
-#os.system("dpkg-buildpackage -us -B -j24")
+os.system("dpkg-buildpackage -us -B -j6")
 
 print "It probably had an error due to missing symbols.  Update the symbols files"
 #os.system("python /opt/update-symbols.py")
 
-print "Resume building"
-#os.system("dpkg-buildpackage -us -B -j24 -nc")
+#print "Resume building"
+#os.system("dpkg-buildpackage -us -B -j6 -nc")
